@@ -1,6 +1,6 @@
-function [merged_ROIs, nm] = find_ROIs_to_merge(A, C, thr, mx)
+function [merged_ROIs, nm] = find_components_to_merge(A, C, thr, mx)
 
-%% Function to define ROIs that should be merged together
+%% Function to define components/ROIs that should be merged together
 %
 % Originally written by:
 % Eftychios A. Pnevmatikakis, Simons Foundation, 2015

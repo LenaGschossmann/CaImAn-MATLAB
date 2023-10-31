@@ -1,4 +1,4 @@
-function [neur_id] = update_merged_components(A, C, Y, P, merged_ROIs, nm, options)
+function [A_merged, C_merged, P_merged, neur_id] = update_merged_components(Y, A,b, C, f, P, merged_ROIs, nm, options)
 
 %% Function to update spatial and temporal footprints of components/ROIs that are merged together
 %
@@ -6,14 +6,20 @@ function [neur_id] = update_merged_components(A, C, Y, P, merged_ROIs, nm, optio
 % Eftychios A. Pnevmatikakis, Simons Foundation, 2015
 %
 % ----- Input:
+%   Y: (k x n matrix) matrix of raw signal of components (components x frames; only required for fast_merge)
 %   A: (p x k matrix, sparse) matrix of spatial footprints (pixel x components)
+%   b: (p x 1 matrix) spatial background (pixel x 1)
 %   C: (k x n matrix) matrix of temporal footprints (components x frames)
-%   Y: (k x n matrix) matrix of raw temporal footprints (components x frames)
+%   f: (1 x n matrix) temporal background (1 x frames)
 %   P: (struct) component parameters
 %   merged_ROIs: (cell) list of IDs that are merged into new ones
 %   nm: number of merging operations
 %   options: (struct) algorithm parameters
 % ----- Output:
+%   A_merged: (p x nm matrix) matrix of merged spatial footprints (pixel x merged components)
+%   C_merged: (nm x T matrix) matrix of merged temporal footprints (merged components x frames)
+%   S_merged: (nm x T matrix) matrix of merged activity/spikes (merged components x frames)
+%   P_merged: (struct) parameters of (new) merged components
 %   neur_id: list of updated components
 % ----------
 
@@ -23,6 +29,8 @@ T = size(C,2);
 A_merged = zeros(d,nm);
 C_merged = zeros(nm,T);
 S_merged = zeros(nm,T);
+Y_merged = zeros(nm,T);
+Df_merged = zeros(nm,1);
 
 if strcmpi(options.deconv_method,'constrained_foopsi')
     P_merged.gn = cell(nm,1);
@@ -69,6 +77,11 @@ for i = 1:nm
     A_merged(:,i) = aa;
     C_merged(i,:) = cc;
     S_merged(i,:) = ss;
+    if options.fast_merge
+        Y_merged(i,:) = yy;
+        Df_merged(i) = df;
+    end
+
     if strcmpi(options.deconv_method,'constrained_foopsi') || strcmpi(options.deconv_method,'MCEM_foopsi')
         if options.fast_merge
             P_merged.gn{i} = 0; %g_temp;   % do not perform deconvolution during merging

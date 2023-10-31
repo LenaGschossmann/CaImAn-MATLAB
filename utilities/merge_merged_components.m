@@ -1,4 +1,4 @@
-function [A, C, S, P, nr] = merge_merged_components(A, C, S, P, nm, neur_id)
+function [A, C, S, P] = merge_merged_components(A, A_merged, C, C_merged, S, S_merged, P, P_merged, nm, neur_id)
 
 %% Function to update fields after merging of components
 %
@@ -7,9 +7,13 @@ function [A, C, S, P, nr] = merge_merged_components(A, C, S, P, nm, neur_id)
 %
 % ----- Input:
 %   A: (p x k matrix, sparse) matrix of spatial footprints (pixel x components)
+%   A_merged: (p x nm matrix) matrix of merged spatial footprints (pixel x merged components)
 %   C: (k x n matrix) matrix of temporal footprints (components x frames)
+%   C_merged: (nm x T matrix) matrix of merged temporal footprints (merged components x frames)
 %   S: (k x n matrix) deconvolved activity/spikes (optional)
+%   S_merged: (nm x T matrix) matrix of merged activity/spikes (merged components x frames)
 %   P: (struct) component parameters
+%   P_merged: (struct) parameters of (new) merged components
 %   nm: number of merging operations
 %   neur_id: list of updated components
 % ----- Output:
@@ -17,7 +21,6 @@ function [A, C, S, P, nr] = merge_merged_components(A, C, S, P, nm, neur_id)
 %   C: (k_new x n matrix) updated matrix of temporal footprints (components x frames)
 %   S: (k_new x n matrix) updated deconvolved activity/spikes (optional)
 %   P: (struct) updated component parameters
-%   nr: new number of components
 % ----------
 
 nr = size(A,2);
@@ -27,7 +30,7 @@ C = [C(1:nr,:);C_merged;C(nr+1:end,:)];
 A(:,neur_id) = [];
 C(neur_id,:) = [];
 
-if nargin < 7
+if ~isempty(S)
     S = [];
     if nargout == 6
         warning('Merged spikes matrix is returned as empty because the original matrix was not provided.');
@@ -47,6 +50,7 @@ if strcmpi(options.deconv_method,'constrained_foopsi') || strcmpi(options.deconv
     P.neuron_sn(neur_id) = [];
     P.neuron_sn(nr - length(neur_id) + (1:nm)) = P_merged.neuron_sn;
 end
+
 nr = nr - length(neur_id) + nm;
 
 end

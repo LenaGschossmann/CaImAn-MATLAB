@@ -1,4 +1,4 @@
-function [A,C,nr,merged_ROIs,P,S] = merge_components(Y,A,b,C,f,P,S,options,merged_ROIs)
+function [A,C,P,S, neur_id] = merge_components(Y,A,b,C,f,P,S,options,merged_ROIs)
 
 % merging of spatially overlapping components that have highly correlated tmeporal activity
 % The correlation threshold for merging overlapping components is user specified in P.merge_thr (default value 0.85)
@@ -15,16 +15,14 @@ function [A,C,nr,merged_ROIs,P,S] = merge_components(Y,A,b,C,f,P,S,options,merge
 % Outputs:
 % A:            matrix of new spatial components
 % C:            matrix of new temporal components
-% nr:           new number of components
-% merged_ROIs:  list of old components that were merged
 % P:            new parameter struct
 % S:            matrix of new deconvolved/activity spikes
-
-% Written by:
+% neur_id:      list of updated components
+% Adapted from code written by:
 % Eftychios A. Pnevmatikakis, Simons Foundation, 2015
 
 defoptions = CNMFSetParms;
-if nargin < 8; options = []; end
+if isempty(options), options = []; end
 if ~isfield(options,'d1') || isempty(options.d1); d1 = input('What is the total number of rows? \n'); else d1 = options.d1; end          % # of rows
 if ~isfield(options,'d2') || isempty(options.d2); d2 = input('What is the total number of columns? \n'); else d2 = options.d2; end       % # of columns
 if ~isfield(options,'merge_thr') || isempty(options.merge_thr); thr = defoptions.merge_thr; else thr = options.merge_thr; end     % merging threshold
@@ -39,16 +37,16 @@ if nr == 0
     return
 end
 
-if nargin < 9 || isempty(merged_ROIs)
-    [merged_ROIs, nm] = find_ROIs_to_merge();
+if isempty(merged_ROIs)
+    [merged_ROIs, nm] = find_components_to_merge();
 else % merged_ROIs is provided, allowing for custom defining merged_ROIs.
     nm = length(merged_ROIs);
 end
 
 % Update ROIs that are merged together
-neur_id = update_merged_components(A, C, Y, P, merged_ROIs, nm, options);
+[A_merged, C_merged, P_merged, neur_id] = update_merged_components(Y, A, b, C, f, P, merged_ROIs, nm, options);
 
 % Merge the newly-merged components back with the not merged ones
-[A, C, S, P, nr] = merge_merged_components(A, C, S, P, nm, neur_id);
+[A, C, S, P] = merge_merged_components(A, A_merged, C, C_merged, S, S_merged, P, P_merged, nm, neur_id);
 
 
