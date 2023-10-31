@@ -1,4 +1,4 @@
-function [A,C,P,S, neur_id] = merge_components(Y,A,b,C,f,P,S,options,merged_ROIs)
+function [A,C,nr, merged_ROIs, P,S, neur_id] = merge_components(Y,A,b,C,f,P,S,options,merged_ROIs)
 
 % merging of spatially overlapping components that have highly correlated tmeporal activity
 % The correlation threshold for merging overlapping components is user specified in P.merge_thr (default value 0.85)
@@ -11,10 +11,13 @@ function [A,C,P,S, neur_id] = merge_components(Y,A,b,C,f,P,S,options,merged_ROIs
 % P:            struct for neuron parameters
 % S:            deconvolved activity/spikes (optional)
 % options:      struct for algorithm parameters
+% merged_ROIs:  list of IDs that are merged into new ones
 
 % Outputs:
 % A:            matrix of new spatial components
 % C:            matrix of new temporal components
+% nr:           new number of components
+% merged_ROIs:  list of IDs that are merged into new ones
 % P:            new parameter struct
 % S:            matrix of new deconvolved/activity spikes
 % neur_id:      list of updated components
@@ -49,4 +52,5 @@ end
 % Merge the newly-merged components back with the not merged ones
 [A, C, S, P] = merge_merged_components(A, A_merged, C, C_merged, S, S_merged, P, P_merged, nm, neur_id);
 
+nr = size(C,1);
 
