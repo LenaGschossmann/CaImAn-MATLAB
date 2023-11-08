@@ -1,4 +1,4 @@
-function [A, C, S, P] = merge_merged_components(A, A_merged, C, C_merged, S, S_merged, P, P_merged, nm, neur_id)
+function [A, C, S, P] = merge_merged_components(A, A_merged, C, C_merged, S, S_merged, P, P_merged, nm, neur_id, options)
 
 %% Function to update fields after merging of components
 %
@@ -16,6 +16,7 @@ function [A, C, S, P] = merge_merged_components(A, A_merged, C, C_merged, S, S_m
 %   P_merged: (struct) parameters of (new) merged components
 %   nm: number of merging operations
 %   neur_id: list of updated components
+%   options: (struct) algorithm parameters
 % ----- Output:
 %   A: (p x k_new matrix, sparse) updated matrix of spatial footprints (pixel x components)
 %   C: (k_new x n matrix) updated matrix of temporal footprints (components x frames)

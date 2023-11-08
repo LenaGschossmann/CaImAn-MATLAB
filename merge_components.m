@@ -47,10 +47,10 @@ else % merged_ROIs is provided, allowing for custom defining merged_ROIs.
 end
 
 % Update ROIs that are merged together
-[A_merged, C_merged, P_merged, neur_id] = update_merged_components(Y, A, b, C, f, P, merged_ROIs, nm, options);
+[A_merged, C_merged, S_merged, P_merged, neur_id] = update_merged_components(Y, A, b, C, f, P, merged_ROIs, nm, options);
 
 % Merge the newly-merged components back with the not merged ones
-[A, C, S, P] = merge_merged_components(A, A_merged, C, C_merged, S, S_merged, P, P_merged, nm, neur_id);
+[A, C, S, P] = merge_merged_components(A, A_merged, C, C_merged, S, S_merged, P, P_merged, nm, neur_id, options);
 
 nr = size(C,1);
 
