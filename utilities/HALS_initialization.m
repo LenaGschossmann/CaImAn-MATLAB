@@ -2,7 +2,8 @@ function [A,C,b,f] = HALS_initialization(Y,K,options)
 
 defoptions = CNMFSetParms;
 if ~isfield(options,'max_iter_hals_in') || isempty(options.max_iter_hals_in); options.max_iter_hals_in = defoptions.max_iter_hals_in; end
-if ~isfield(options,'init_hals_method') || isempty(options.init_hals_method); options.init_hals_method = 'random' ; end
+if ~isfield(options,'init_hals_method') || isempty(options.init_hals_method); init_hals_method = 'random';
+else, init_hals_method = options.init_hals_method; end
 if ~isfield(options,'rem_prct') || isempty(options.rem_prct); options.rem_prct = defoptions.rem_prct; end
 if ~isfield(options,'nb') || isempty(options.nb); nb = defoptions.nb; else nb = options.nb; end
 
