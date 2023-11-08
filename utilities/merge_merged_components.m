@@ -31,7 +31,7 @@ C = [C(1:nr,:);C_merged;C(nr+1:end,:)];
 A(:,neur_id) = [];
 C(neur_id,:) = [];
 
-if ~isempty(S)
+if isempty(S)
     S = [];
     if nargout == 6
         warning('Merged spikes matrix is returned as empty because the original matrix was not provided.');

@@ -101,7 +101,8 @@ for i = 1:nm
 end
 
 
-neur_id = unique(cell2mat(merged_ROIs));
+neur_id = [];
+for ii = 1:numel(merged_ROIs), neur_id = unique([neur_id, merged_ROIs{ii}]); end
 
 
 end
