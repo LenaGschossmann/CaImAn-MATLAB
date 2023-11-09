@@ -1,4 +1,4 @@
-function [A_merged, C_merged, P_merged, neur_id] = update_merged_components(Y, A,b, C, f, P, merged_ROIs, nm, options)
+function [A_merged, C_merged, S_merged, P_merged, neur_id] = update_merged_components(Y, A,b, C, f, P, merged_ROIs, nm, options)
 
 %% Function to update spatial and temporal footprints of components/ROIs that are merged together
 %
