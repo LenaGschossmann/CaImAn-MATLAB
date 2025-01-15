@@ -50,7 +50,7 @@ end
 [A_merged, C_merged, S_merged, P_merged, neur_id] = update_merged_components(Y, A, b, C, f, P, merged_ROIs, nm, options);
 
 % Merge the newly-merged components back with the not merged ones
-[A, C, S, P] = merge_merged_components(A, A_merged, C, C_merged, S, S_merged, P, P_merged, nm, neur_id, options);
+[A, C, S, P] = add_merged_components(A, A_merged, C, C_merged, S, S_merged, P, P_merged, nm, neur_id, options);
 
 nr = size(C,1);
 
