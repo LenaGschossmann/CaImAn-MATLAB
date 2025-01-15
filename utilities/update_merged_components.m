@@ -43,6 +43,7 @@ if ~options.fast_merge
     Y_res = Y - A*C;
 end
 
+delete_idx = [];
 
 for i = 1:nm
     % merged_ROIs{i} = find(MC(:,ind(i)));
@@ -72,34 +73,57 @@ for i = 1:nm
         end
         cc = update_temporal_components(Y_res(ff,:),A_merged(ff,i),b(ff,:),median(spdiags(nC,0,length(nC),length(nC))\C(merged_ROIs{i},:)),f,Pmr,options);
         [aa,bb] = update_spatial_components(Y_res,cc,f,[A_merged(:,i), b(:,:)],P,options);
-        [cc,~,Ptemp,ss] = update_temporal_components(Y_res(ff,:),aa(ff),bb(ff,:),cc,f,Pmr,options);
-    end
-    A_merged(:,i) = aa;
-    C_merged(i,:) = cc;
-    S_merged(i,:) = ss;
-    if options.fast_merge
-        Y_merged(i,:) = yy;
-        Df_merged(i) = df;
+        if ~isempty(aa)
+            [cc,~,Ptemp,ss] = update_temporal_components(Y_res(ff,:),aa(ff),bb(ff,:),cc,f,Pmr,options);
+        end
     end
 
-    if strcmpi(options.deconv_method,'constrained_foopsi') || strcmpi(options.deconv_method,'MCEM_foopsi')
+    if ~isempty(aa)
+        A_merged(:,i) = aa;
+        C_merged(i,:) = cc;
+        S_merged(i,:) = ss;
         if options.fast_merge
-            P_merged.gn{i} = 0; %g_temp;   % do not perform deconvolution during merging
-            P_merged.b{i} = 0;  %b_temp;
-            P_merged.c1{i} = 0; %c1_temp;
-            P_merged.neuron_sn{i} = 0; %sn_temp;
-        else
-            P_merged.gn{i} = Ptemp.gn{1};
-            P_merged.b{i} = Ptemp.b{1};
-            P_merged.c1{i} = Ptemp.c1{1};
-            P_merged.neuron_sn{i} = Ptemp.neuron_sn{1};
-            if i < nm
-                Y_res(ff,:) = Y_res(ff,:) - aa(ff)*cc;
+            Y_merged(i,:) = yy;
+            Df_merged(i) = df;
+        end
+
+        if strcmpi(options.deconv_method,'constrained_foopsi') || strcmpi(options.deconv_method,'MCEM_foopsi')
+            if options.fast_merge
+                P_merged.gn{i} = 0; %g_temp;   % do not perform deconvolution during merging
+                P_merged.b{i} = 0;  %b_temp;
+                P_merged.c1{i} = 0; %c1_temp;
+                P_merged.neuron_sn{i} = 0; %sn_temp;
+            else
+                P_merged.gn{i} = Ptemp.gn{1};
+                P_merged.b{i} = Ptemp.b{1};
+                P_merged.c1{i} = Ptemp.c1{1};
+                P_merged.neuron_sn{i} = Ptemp.neuron_sn{1};
+                if i < nm
+                    Y_res(ff,:) = Y_res(ff,:) - aa(ff)*cc;
+                end
             end
         end
+    else
+        delete_idx = [delete_idx, i];
     end
 end
 
+if ~isempty(delete_idx)
+    A_merged(:,delete_idx) = [];
+    C_merged(delete_idx,:) = [];
+    S_merged(delete_idx,:) = [];
+    if options.fast_merge
+        Y_merged(delete_idx,:) = [];
+        Df_merged(delete_idx) = [];
+    end
+    
+    if strcmpi(options.deconv_method,'constrained_foopsi')
+        P_merged.gn(delete_idx) = [];
+        P_merged.b(delete_idx) = [];
+        P_merged.c1(delete_idx) = [];
+        P_merged.neuron_sn(delete_idx) = [];
+    end
+end
 
 neur_id = [];
 for ii = 1:numel(merged_ROIs), neur_id = unique([neur_id, merged_ROIs{ii}]); end
