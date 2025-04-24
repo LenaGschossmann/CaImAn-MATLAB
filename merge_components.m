@@ -41,7 +41,7 @@ if nr == 0
 end
 
 if isempty(merged_ROIs)
-    [merged_ROIs, nm] = find_components_to_merge();
+    [merged_ROIs, nm] = find_components_to_merge(A, C, thr, mx);
 else % merged_ROIs is provided, allowing for custom defining merged_ROIs.
     nm = length(merged_ROIs);
 end
